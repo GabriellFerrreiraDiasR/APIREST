@@ -1,0 +1,84 @@
+const express = require("express");
+const app = express();
+app.use(express.json());
+const PORT = 3000;
+
+app.get("/livro", (req,res) => {
+    res.send("FILHADAPUTA Mundo");
+});
+app.get("/", (req,res) => {
+    res.send("VAisefuder Mundo");
+});
+const tarefas =[
+    {
+        id: 1,
+        titulo: "tarefa1",
+        concluida : false,
+    },
+    {
+        id: 2,
+        titulo: "tarefa2",
+        concluida : false,
+    }
+]
+let proximoId = 3;
+
+app.listen(PORT,() => {
+    console.log("Conectado ao servidor em http://localhost:" + PORT);
+});
+app.get("/tarefas", (req,res) => {
+    res.json(tarefas);
+});
+app.get("/tarefas/:id", (req,res) => {
+    const id = Number (req.params.id);
+    const tarefa = tarefas.find((t) => t.id === id);
+
+    if(!tarefa){
+        return res.status(404).json({
+            erro: 'Tarefa nao encontrada'
+        })
+    }
+    res.json(tarefa);
+});
+
+app.post("/tarefas", (req,res ) => {
+    const titulo = req.body?.titulo
+    if(!titulo){
+        return res.status(400).json;{
+            erro: "o campo titulo é obrigatorio";
+        }
+
+    }
+    const novaTarefa = {
+        id : proximoId++,
+        titulo,
+        concluida : false
+    }
+    tarefas.push(novaTarefa);
+
+    res.status(201).json(novaTarefa);
+})
+
+app.put("/tarefas./:id", (req,res) =>{
+    const id = Number(req.params.id)
+    const tarefa = tarefas.find((t) => t.id === id)
+
+    if(!tarefa){
+        return res.status(404).json({
+            erro: "Tarefa não encontrada"
+        })
+    }
+    const {titulo, concluida} = req.body ?? {}
+
+    if(!titulo){
+        return res.status(400).json({
+            erro: "O campo titulo é obrigatório"
+        })
+    }
+
+    tarefa.titulo = titulo
+
+    if(typeof concluida === bolean){
+        tarefa.concluida = concluida
+    }
+})
